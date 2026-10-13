@@ -51,32 +51,30 @@ const startServer = async () => {
       }
     }
 
-    httpServer.on('error', (err) => {
-      if (err.code === 'EADDRINUSE') {
-        const fallbackPort = 5001;
-        console.warn(`⚠️  Port ${PORT} in use (AirPlay Receiver / ControlCenter). Automatically listening on port ${fallbackPort}...`);
-        httpServer.listen(fallbackPort, () => {
-          console.log('');
-          console.log('╔══════════════════════════════════════════════╗');
-          console.log(`║   🏥 HABS Server running on port ${fallbackPort}        ║`);
-          console.log('║   Healthcare Appointment Booking System      ║');
-          console.log('╚══════════════════════════════════════════════╝');
-          console.log('');
-        });
-      } else {
-        console.error('❌ Server error:', err.message);
-        process.exit(1);
-      }
-    });
+    const tryListen = (portToTry, fallbackPort) => {
+      const onError = (err) => {
+        if (err.code === 'EADDRINUSE' && fallbackPort) {
+          console.warn(`⚠️  Port ${portToTry} in use (AirPlay Receiver / ControlCenter). Automatically switching to port ${fallbackPort}...`);
+          tryListen(fallbackPort, null);
+        } else {
+          console.error(`❌ Server error on port ${portToTry}:`, err.message);
+          process.exit(1);
+        }
+      };
 
-    httpServer.listen(PORT, () => {
-      console.log('');
-      console.log('╔══════════════════════════════════════════════╗');
-      console.log(`║   🏥 HABS Server running on port ${PORT}        ║`);
-      console.log('║   Healthcare Appointment Booking System      ║');
-      console.log('╚══════════════════════════════════════════════╝');
-      console.log('');
-    });
+      httpServer.once('error', onError);
+      httpServer.listen(portToTry, () => {
+        httpServer.removeListener('error', onError);
+        console.log('');
+        console.log('╔══════════════════════════════════════════════╗');
+        console.log(`║   🏥 HABS Server running on port ${portToTry}        ║`);
+        console.log('║   Healthcare Appointment Booking System      ║');
+        console.log('╚══════════════════════════════════════════════╝');
+        console.log('');
+      });
+    };
+
+    tryListen(PORT, 5001);
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);
     process.exit(1);

@@ -9,8 +9,6 @@ const redis = require('./src/config/redis');
 const User = require('./src/models/User.model');
 const Availability = require('./src/models/Availability.model');
 
-const PORT = 5001; // Use 5001 for automated test isolation
-
 async function runTests() {
   console.log('🧪 Starting HABS Automated Acceptance Test Suite...\n');
 
@@ -42,7 +40,8 @@ async function runTests() {
   const app = createApp(io);
   httpServer.on('request', app);
 
-  await new Promise((resolve) => httpServer.listen(PORT, resolve));
+  await new Promise((resolve) => httpServer.listen(0, resolve));
+  const PORT = httpServer.address().port;
   console.log(`🚀 Test server running on http://127.0.0.1:${PORT}\n`);
 
   const BASE_URL = `http://127.0.0.1:${PORT}/api`;
