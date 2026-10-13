@@ -36,8 +36,7 @@ const App = () => {
   return (
     <Router>
       <AuthProvider>
-        <div className="min-h-screen bg-[var(--habs-bg)]">
-          <Navbar />
+        <div className="min-h-screen bg-[#eceef7]">
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<HomeRedirect />} />
@@ -74,23 +73,27 @@ const App = () => {
           <Toaster
             position="top-right"
             toastOptions={{
-              duration: 4000,
+              duration: 3500,
               style: {
-                background: '#1e293b',
-                color: '#f1f5f9',
-                border: '1px solid #334155',
-                borderRadius: '0.5rem',
+                background: '#ffffff',
+                color: '#171825',
+                border: '1px solid #e7eaf4',
+                borderRadius: '1.25rem',
+                boxShadow: '0 15px 35px -5px rgba(20, 24, 45, 0.1)',
+                padding: '0.875rem 1.25rem',
+                fontWeight: 600,
+                fontSize: '0.875rem',
               },
               success: {
                 iconTheme: {
-                  primary: '#22c55e',
-                  secondary: '#1e293b',
+                  primary: '#10b981',
+                  secondary: '#ffffff',
                 },
               },
               error: {
                 iconTheme: {
                   primary: '#ef4444',
-                  secondary: '#1e293b',
+                  secondary: '#ffffff',
                 },
               },
             }}

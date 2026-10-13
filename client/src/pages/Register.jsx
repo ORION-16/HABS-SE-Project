@@ -3,6 +3,20 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import {
+  Stethoscope,
+  User,
+  Mail,
+  Phone,
+  Lock,
+  Calendar,
+  Award,
+  FileBadge,
+  ArrowRight,
+  CheckCircle2,
+  MailCheck
+} from 'lucide-react';
 import { registerUser } from '../api/auth.api';
 import toast from 'react-hot-toast';
 
@@ -28,12 +42,13 @@ const registerSchema = z.object({
 const Register = () => {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
-  const navigate = useNavigate();
+  const [registeredEmail, setRegisteredEmail] = useState('');
 
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(registerSchema),
@@ -57,8 +72,9 @@ const Register = () => {
 
       const res = await registerUser(payload);
       if (res.data.success) {
+        setRegisteredEmail(data.email);
         setSuccess(true);
-        toast.success('Registration successful!');
+        toast.success('Registration successful! Check your email.');
       }
     } catch (err) {
       const message = err.response?.data?.message || 'Registration failed';
@@ -70,132 +86,218 @@ const Register = () => {
 
   if (success) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 bg-gradient-animated">
-        <div className="glass-card p-8 max-w-md w-full text-center animate-fade-in">
-          <div className="text-5xl mb-4">📧</div>
-          <h2 className="text-2xl font-bold text-[var(--habs-text)] mb-2">Check Your Email</h2>
-          <p className="text-[var(--habs-text-muted)] mb-6">
-            We've sent a verification link to your email address. Please verify your account to login.
+      <div className="min-h-screen bg-[#eceef7] flex items-center justify-center p-4 sm:p-6 antialiased">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-[460px] bg-white rounded-[32px] sm:rounded-[36px] border border-[#e8ecf4] shadow-[0_20px_50px_-12px_rgba(20,24,45,0.08)] p-8 sm:p-10 text-center"
+        >
+          <div className="w-16 h-16 mx-auto mb-4 rounded-3xl bg-indigo-50 text-[#6956e5] flex items-center justify-center shadow-inner">
+            <MailCheck className="w-8 h-8" />
+          </div>
+          <h2 className="text-2xl font-extrabold text-[#171825]">Check Your Email</h2>
+          <p className="text-xs font-semibold text-[#8e94a5] mt-2 leading-relaxed">
+            We sent a verification token to <strong className="text-gray-800">{registeredEmail}</strong>.
+            Click the link in the email or proceed to login once confirmed.
           </p>
+
           {selectedRole === 'doctor' && (
-            <div className="p-4 rounded-lg bg-[var(--habs-warning)]/10 border border-[var(--habs-warning)]/25 mb-6">
-              <p className="text-sm text-[var(--habs-warning)]">
-                ⚠️ Doctor accounts require admin approval after email verification.
-              </p>
+            <div className="mt-4 p-3 rounded-2xl bg-amber-50 text-amber-800 text-xs font-semibold border border-amber-100">
+              ⚠️ Doctor accounts also require admin approval after email verification.
             </div>
           )}
-          <Link to="/login" className="btn-primary w-full">
-            Go to Login
+
+          <Link
+            to="/login"
+            className="habs-btn-primary w-full !py-3 mt-6"
+          >
+            Go to Login Page
           </Link>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-8 bg-gradient-animated">
-      <div className="glass-card p-8 max-w-lg w-full animate-fade-in">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[var(--habs-primary)] to-[var(--habs-secondary)] flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-[var(--habs-primary)]/25">
-            H
+    <div className="min-h-screen bg-[#eceef7] flex items-center justify-center p-4 sm:p-6 antialiased selection:bg-indigo-500 selection:text-white">
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="w-full max-w-[500px] bg-white rounded-[32px] sm:rounded-[36px] border border-[#e8ecf4] shadow-[0_20px_50px_-12px_rgba(20,24,45,0.08)] p-6 sm:p-9 relative overflow-hidden"
+      >
+        {/* Brand Header */}
+        <div className="text-center mb-6">
+          <div className="w-14 h-14 mx-auto mb-3.5 rounded-2xl bg-gradient-to-tr from-[#6956e5] via-[#7d67f5] to-[#9a87fc] flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
+            <Stethoscope className="w-7 h-7" />
           </div>
-          <h1 className="text-2xl font-bold text-[var(--habs-text)]">Create Account</h1>
-          <p className="text-sm text-[var(--habs-text-muted)] mt-1">Join HABS today</p>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#171825] tracking-tight">
+            Create Account
+          </h2>
+          <p className="text-xs sm:text-sm font-semibold text-[#8e94a5] mt-1">
+            Join HABS Healthcare System
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Role Selector */}
-          <div>
-            <label className="label-habs">I am a</label>
-            <div className="grid grid-cols-2 gap-3">
-              {['patient', 'doctor'].map((r) => (
-                <label
-                  key={r}
-                  className={`flex items-center justify-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${
-                    selectedRole === r
-                      ? 'border-[var(--habs-primary)] bg-[var(--habs-primary)]/10 text-[var(--habs-primary-light)]'
-                      : 'border-[var(--habs-border)] text-[var(--habs-text-muted)] hover:border-[var(--habs-primary)]/50'
-                  }`}
-                >
-                  <input type="radio" value={r} {...register('role')} className="sr-only" />
-                  <span className="text-lg">{r === 'patient' ? '🧑‍💼' : '🩺'}</span>
-                  <span className="font-medium capitalize">{r}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+        {/* Role Toggle Tabs */}
+        <div className="grid grid-cols-2 p-1.5 rounded-2xl bg-[#f4f5fb] border border-slate-100 mb-5">
+          <button
+            type="button"
+            onClick={() => setValue('role', 'patient')}
+            className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+              selectedRole === 'patient'
+                ? 'bg-white text-[#171825] shadow-sm font-extrabold'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <span>🧑‍💼</span> Patient
+          </button>
+          <button
+            type="button"
+            onClick={() => setValue('role', 'doctor')}
+            className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+              selectedRole === 'doctor'
+                ? 'bg-white text-[#171825] shadow-sm font-extrabold'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <span>🩺</span> Doctor
+          </button>
+        </div>
 
-          {/* Name */}
+        {/* Registration Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5">
+          {/* Full Name */}
           <div>
-            <label className="label-habs">Full Name</label>
-            <input {...register('name')} className="input-habs" placeholder="John Doe" />
-            {errors.name && <p className="error-text">{errors.name.message}</p>}
+            <label className="block text-xs font-bold text-[#171825] mb-1">Full Name</label>
+            <div className="relative">
+              <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                {...register('name')}
+                placeholder="Jane Doe"
+                className="habs-input !pl-10"
+              />
+            </div>
+            {errors.name && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.name.message}</p>}
           </div>
 
           {/* Email */}
           <div>
-            <label className="label-habs">Email</label>
-            <input {...register('email')} type="email" className="input-habs" placeholder="john@example.com" />
-            {errors.email && <p className="error-text">{errors.email.message}</p>}
+            <label className="block text-xs font-bold text-[#171825] mb-1">Email Address</label>
+            <div className="relative">
+              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                {...register('email')}
+                type="email"
+                placeholder="jane@example.com"
+                className="habs-input !pl-10"
+              />
+            </div>
+            {errors.email && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.email.message}</p>}
           </div>
 
           {/* Phone */}
           <div>
-            <label className="label-habs">Phone Number</label>
-            <input {...register('phone')} className="input-habs" placeholder="9876543210" />
-            {errors.phone && <p className="error-text">{errors.phone.message}</p>}
+            <label className="block text-xs font-bold text-[#171825] mb-1">Phone Number</label>
+            <div className="relative">
+              <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                {...register('phone')}
+                placeholder="9876543210"
+                className="habs-input !pl-10"
+              />
+            </div>
+            {errors.phone && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.phone.message}</p>}
           </div>
 
           {/* Password */}
           <div>
-            <label className="label-habs">Password</label>
-            <input {...register('password')} type="password" className="input-habs" placeholder="Min. 8 characters" />
-            {errors.password && <p className="error-text">{errors.password.message}</p>}
+            <label className="block text-xs font-bold text-[#171825] mb-1">Password</label>
+            <div className="relative">
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                {...register('password')}
+                type="password"
+                placeholder="Min. 8 characters"
+                className="habs-input !pl-10"
+              />
+            </div>
+            {errors.password && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.password.message}</p>}
           </div>
 
-          {/* Patient-only: Date of Birth */}
+          {/* Patient: Date of Birth */}
           {selectedRole === 'patient' && (
-            <div className="animate-fade-in">
-              <label className="label-habs">Date of Birth</label>
-              <input {...register('dateOfBirth')} type="date" className="input-habs" />
+            <div>
+              <label className="block text-xs font-bold text-[#171825] mb-1">Date of Birth</label>
+              <div className="relative">
+                <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  {...register('dateOfBirth')}
+                  type="date"
+                  className="habs-input !pl-10"
+                />
+              </div>
             </div>
           )}
 
-          {/* Doctor-only: Specialization + License */}
+          {/* Doctor: Specialization & License */}
           {selectedRole === 'doctor' && (
-            <div className="space-y-4 animate-fade-in">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               <div>
-                <label className="label-habs">Specialization</label>
-                <input {...register('specialization')} className="input-habs" placeholder="e.g. Cardiology" />
-                {errors.specialization && <p className="error-text">{errors.specialization.message}</p>}
+                <label className="block text-xs font-bold text-[#171825] mb-1">Specialization</label>
+                <div className="relative">
+                  <Award className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    {...register('specialization')}
+                    placeholder="e.g. Cardiology"
+                    className="habs-input !pl-10"
+                  />
+                </div>
+                {errors.specialization && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.specialization.message}</p>}
               </div>
+
               <div>
-                <label className="label-habs">License Number</label>
-                <input {...register('licenseNumber')} className="input-habs" placeholder="e.g. MH-12345" />
-                {errors.licenseNumber && <p className="error-text">{errors.licenseNumber.message}</p>}
+                <label className="block text-xs font-bold text-[#171825] mb-1">License No.</label>
+                <div className="relative">
+                  <FileBadge className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    {...register('licenseNumber')}
+                    placeholder="MH-12345"
+                    className="habs-input !pl-10"
+                  />
+                </div>
+                {errors.licenseNumber && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.licenseNumber.message}</p>}
               </div>
             </div>
           )}
 
-          {/* Submit */}
-          <button type="submit" disabled={submitting} className="btn-primary w-full mt-2">
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="habs-btn-primary w-full !py-3 mt-4"
+          >
             {submitting ? (
-              <span className="animate-pulse-glow">Creating Account...</span>
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                Registering...
+              </span>
             ) : (
-              'Create Account'
+              <span className="flex items-center justify-center gap-2">
+                Create Account <ArrowRight className="w-4 h-4" />
+              </span>
             )}
           </button>
         </form>
 
         {/* Footer */}
-        <p className="text-center text-sm text-[var(--habs-text-muted)] mt-6">
-          Already have an account?{' '}
-          <Link to="/login" className="text-[var(--habs-primary-light)] hover:underline font-medium">
+        <p className="text-center text-xs font-semibold text-[#8e94a5] mt-5">
+          Already registered?{' '}
+          <Link to="/login" className="font-bold text-[#6956e5] hover:underline">
             Login here
           </Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 };
