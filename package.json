@@ -1,0 +1,19 @@
+{
+  "name": "habs",
+  "version": "1.0.0",
+  "description": "Healthcare Appointment Booking System",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "install:all": "npm i && npm i --prefix server && npm i --prefix client",
+    "seed": "npm run seed --prefix server",
+    "test": "NODE_ENV=test node server/test-suite.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "authors": [
+    "Oreo Rodrigues (2024300197)",
+    "Anushree Sawant (2024300210)"
+  ]
+}
