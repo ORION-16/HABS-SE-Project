@@ -5,8 +5,9 @@ import { io } from 'socket.io-client';
  * Hook to manage a Socket.io connection.
  * @param {string} doctorId - Doctor ID to join the room for
  * @param {Function} onAvailabilityUpdated - Callback for availability_updated event
+ * @param {Function} onAppointmentUpdated - Callback for appointment_updated event
  */
-const useSocket = (doctorId, onAvailabilityUpdated) => {
+const useSocket = (doctorId, onAvailabilityUpdated, onAppointmentUpdated) => {
   const socketRef = useRef(null);
 
   const stableCallback = useCallback(
@@ -16,6 +17,13 @@ const useSocket = (doctorId, onAvailabilityUpdated) => {
       }
     },
     [onAvailabilityUpdated]
+  );
+
+  const stableAppointmentCallback = useCallback(
+    (data) => {
+      if (onAppointmentUpdated) onAppointmentUpdated(data);
+    },
+    [onAppointmentUpdated]
   );
 
   useEffect(() => {
@@ -34,6 +42,7 @@ const useSocket = (doctorId, onAvailabilityUpdated) => {
     });
 
     socket.on('availability_updated', stableCallback);
+    socket.on('appointment_updated', stableAppointmentCallback);
 
     socket.on('disconnect', () => {
       console.log('🔌 Socket disconnected');
@@ -41,9 +50,10 @@ const useSocket = (doctorId, onAvailabilityUpdated) => {
 
     return () => {
       socket.off('availability_updated', stableCallback);
+      socket.off('appointment_updated', stableAppointmentCallback);
       socket.disconnect();
     };
-  }, [doctorId, stableCallback]);
+  }, [doctorId, stableCallback, stableAppointmentCallback]);
 
   return socketRef;
 };

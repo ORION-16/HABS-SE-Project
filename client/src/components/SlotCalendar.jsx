@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar as CalendarIcon,
@@ -6,10 +6,10 @@ import {
   Search,
   CheckCircle2,
   AlertTriangle,
-  Sparkles,
   Inbox
 } from 'lucide-react';
 import { getOpenSlots } from '../api/availability.api';
+import { bookAppointment } from '../api/appointments.api';
 import toast from 'react-hot-toast';
 
 /**
@@ -18,20 +18,21 @@ import toast from 'react-hot-toast';
  *   - doctorId: string (MongoDB ObjectId of the doctor)
  *   - preselectedDate: optional ISO date string
  */
-const SlotCalendar = ({ doctorId, preselectedDate = '' }) => {
-  const [date, setDate] = useState(preselectedDate || '2026-11-10');
+const SlotCalendar = ({ doctorId, preselectedDate = '', onAppointmentBooked }) => {
+  const todayStr = new Date().toISOString().split('T')[0];
+  const [date, setDate] = useState(preselectedDate || todayStr);
   const [slots, setSlots] = useState([]);
   const [blocked, setBlocked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [booking, setBooking] = useState(false);
 
-  const fetchSlots = async () => {
+  const fetchSlots = async (queryDate = date) => {
     if (!doctorId) {
-      toast.error('Please specify a Doctor ID');
       return;
     }
-    if (!date) {
+    if (!queryDate) {
       toast.error('Please select a date');
       return;
     }
@@ -40,7 +41,7 @@ const SlotCalendar = ({ doctorId, preselectedDate = '' }) => {
     setHasSearched(true);
 
     try {
-      const res = await getOpenSlots(doctorId, date);
+      const res = await getOpenSlots(doctorId, queryDate);
       if (res.data.success) {
         const slotsData = res.data.data?.slots || res.data.slots || [];
         const blockedData = res.data.data?.blocked ?? res.data.blocked ?? false;
@@ -50,11 +51,36 @@ const SlotCalendar = ({ doctorId, preselectedDate = '' }) => {
       }
     } catch (err) {
       const message = err.response?.data?.message || 'Failed to fetch slots';
-      toast.error(message);
+      console.warn('Could not fetch open slots:', message);
       setSlots([]);
       setBlocked(false);
     } finally {
       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (doctorId && date) {
+      fetchSlots(date);
+    }
+  }, [doctorId, date]);
+
+  const handleBooking = async () => {
+    if (!selectedSlot || booking) return;
+    setBooking(true);
+    try {
+      const res = await bookAppointment({ doctorId, date, time: selectedSlot });
+      toast.success(res.data?.message || 'Appointment confirmed.');
+      setSelectedSlot(null);
+      await fetchSlots(date);
+      onAppointmentBooked?.(res.data?.data);
+    } catch (err) {
+      const message = err.response?.data?.message || 'Could not confirm this appointment.';
+      toast.error(message);
+      // The slot may have been taken while this patient was deciding.
+      if (err.response?.status === 409) await fetchSlots(date);
+    } finally {
+      setBooking(false);
     }
   };
 
@@ -75,55 +101,44 @@ const SlotCalendar = ({ doctorId, preselectedDate = '' }) => {
   };
 
   return (
-    <div className="habs-card p-5 sm:p-6">
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#f1f3f9]">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-[#eeebfd] text-[#6956e5] flex items-center justify-center">
-            <Clock className="w-5 h-5" />
-          </div>
-          <div>
-            <h3 className="font-extrabold text-[#171825] text-base">Select Consultation Slot</h3>
-            <p className="text-xs font-semibold text-[#8e94a5]">30-minute intervals aligned with doctor cap</p>
-          </div>
-        </div>
-
-        {hasSearched && (
-          <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-700">
-            {getDayName(date)}
-          </span>
-        )}
-      </div>
-
+    <div className="space-y-6">
       {/* Date Search Controls */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-5">
+      <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <CalendarIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <CalendarIcon className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="habs-input !pl-10"
+            className="habs-input !pl-12 !h-12 !text-sm"
             min={new Date().toISOString().split('T')[0]}
           />
         </div>
 
         <button
-          onClick={fetchSlots}
+          onClick={() => fetchSlots(date)}
           disabled={loading || !date}
-          className="habs-btn-primary shrink-0"
+          className="habs-btn-primary shrink-0 !h-12 !px-6 !text-sm"
         >
           {loading ? (
             <span className="flex items-center gap-2">
-              <span className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+              <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
               Searching...
             </span>
           ) : (
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-2">
               <Search className="w-4 h-4" /> Find Open Slots
             </span>
           )}
         </button>
       </div>
+
+      {hasSearched && (
+        <div className="flex items-center justify-between text-xs sm:text-sm text-slate-500 font-medium pb-3 border-b border-slate-100">
+          <span>Date: <strong className="text-slate-900 font-bold">{getDayName(date)}</strong></span>
+          <span className="text-xs bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold">30-min intervals</span>
+        </div>
+      )}
 
       {/* Results Display */}
       {hasSearched && !loading && (
@@ -133,13 +148,13 @@ const SlotCalendar = ({ doctorId, preselectedDate = '' }) => {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="p-6 rounded-2xl bg-rose-50/70 border border-rose-100 text-center"
+              className="p-8 rounded-2xl bg-rose-50/70 border border-rose-100 text-center"
             >
-              <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-2">
+              <div className="w-13 h-13 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3">
                 <AlertTriangle className="w-6 h-6" />
               </div>
-              <p className="font-extrabold text-rose-800 text-sm">Doctor Unavailable on This Date</p>
-              <p className="text-xs text-rose-600 mt-1">
+              <p className="font-extrabold text-rose-800 text-base">Doctor Unavailable on This Date</p>
+              <p className="text-xs sm:text-sm text-rose-600 mt-1 max-w-md mx-auto">
                 The doctor has explicitly blocked off this calendar day. Please select another date.
               </p>
             </motion.div>
@@ -148,13 +163,13 @@ const SlotCalendar = ({ doctorId, preselectedDate = '' }) => {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="p-6 rounded-2xl bg-slate-50 border border-slate-100 text-center"
+              className="p-8 rounded-2xl bg-slate-50 border border-slate-100 text-center"
             >
-              <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2">
+              <div className="w-13 h-13 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
                 <Inbox className="w-6 h-6" />
               </div>
-              <p className="font-extrabold text-slate-800 text-sm">No Slots Available</p>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="font-extrabold text-slate-800 text-base">No Slots Available</p>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-md mx-auto">
                 The doctor does not have working hours configured on this weekday.
               </p>
             </motion.div>
@@ -163,19 +178,19 @@ const SlotCalendar = ({ doctorId, preselectedDate = '' }) => {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="space-y-4"
+              className="space-y-5"
             >
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-[#171825]">
+              <div className="flex items-center justify-between text-xs sm:text-sm">
+                <span className="font-bold text-slate-900">
                   {slots.length} available 30-min window{slots.length !== 1 ? 's' : ''}
                 </span>
-                <span className="font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Bookable
+                <span className="font-semibold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full flex items-center gap-1.5 text-xs">
+                  <CheckCircle2 className="w-4 h-4" /> Bookable
                 </span>
               </div>
 
               {/* Slot chips grid */}
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {slots.map((slot) => {
                   const isSelected = selectedSlot === slot;
                   return (
@@ -195,26 +210,27 @@ const SlotCalendar = ({ doctorId, preselectedDate = '' }) => {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="p-4 rounded-2xl bg-[#f0edfe] border border-indigo-100 flex items-center justify-between flex-wrap gap-3"
+                  className="p-5 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex items-center justify-between flex-wrap gap-4"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-indigo-300">
-                      <Clock className="w-4 h-4" />
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-11 h-11 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-indigo-300">
+                      <Clock className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="font-extrabold text-[#171825] text-xs">
-                        Selected: <span className="text-[#6956e5]">{selectedSlot}</span> on {getDayName(date)}
+                      <p className="font-extrabold text-slate-900 text-sm">
+                        Selected: <span className="text-indigo-600">{selectedSlot}</span> on {getDayName(date)}
                       </p>
-                      <p className="text-[11px] text-[#8e94a5] mt-0.5">
-                        Module 3 will process instant patient booking confirmation
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Click confirm to reserve this consultation slot
                       </p>
                     </div>
                   </div>
                   <button
-                    onClick={() => toast.success(`Selected ${selectedSlot} on ${getDayName(date)}`)}
-                    className="habs-pill-btn !py-2 !px-4 !bg-[#6956e5] !text-white"
+                    onClick={handleBooking}
+                    disabled={booking}
+                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-indigo-600/20 transition-all"
                   >
-                    Confirm Selection
+                    {booking ? 'Confirming…' : 'Confirm Appointment'}
                   </button>
                 </motion.div>
               )}

@@ -15,6 +15,7 @@ const LOCK_DURATION_MS = 15 * 60 * 1000; // 15 minutes
 const register = async (req, res, next) => {
   try {
     const { name, email, phone, password, role, dateOfBirth, specialization, licenseNumber } = req.validatedBody;
+    const requiresEmailVerification = process.env.NODE_ENV === 'production';
 
     // Check email not already registered
     const existing = await User.findOne({ email });
@@ -35,7 +36,9 @@ const register = async (req, res, next) => {
       phone,
       passwordHash,
       role,
-      isVerified: false,
+      // Email delivery is deliberately optional for local development. SMTP
+      // credentials are required to send a real Gmail message in production.
+      isVerified: !requiresEmailVerification,
     };
 
     if (role === 'patient' && dateOfBirth) {
@@ -45,23 +48,27 @@ const register = async (req, res, next) => {
     if (role === 'doctor') {
       userData.specialization = specialization;
       userData.licenseNumber = licenseNumber;
-      userData.isApproved = false;
+      // Local registration must be self-contained now that demo admins are
+      // not seeded. Production retains the administrator approval workflow.
+      userData.isApproved = process.env.NODE_ENV !== 'production';
     }
 
     const user = await User.create(userData);
 
-    // Generate verification token
-    const verificationToken = signVerificationToken(
-      { userId: user._id, email: user.email, purpose: 'email-verification' },
-      '24h'
-    );
-
-    // Send verification email (console.log in dev)
-    await sendVerificationEmail(user.email, verificationToken);
+    if (requiresEmailVerification) {
+      const verificationToken = signVerificationToken(
+        { userId: user._id, email: user.email, purpose: 'email-verification' },
+        '24h'
+      );
+      await sendVerificationEmail(user.email, verificationToken);
+    }
 
     res.status(201).json({
       success: true,
-      message: 'Registration successful. Check your email to verify your account.',
+      message: requiresEmailVerification
+        ? 'Registration successful. Check your email to verify your account.'
+        : 'Registration successful. You can sign in now.',
+      data: { requiresEmailVerification },
     });
   } catch (error) {
     next(error);
@@ -366,6 +373,85 @@ const getMe = async (req, res, next) => {
   }
 };
 
+/**
+ * GET /api/auth/users
+ * Admin only — list all users with role counts.
+ */
+const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find({}).select('-passwordHash').sort({ createdAt: -1 });
+
+    const counts = {
+      total: users.length,
+      patients: users.filter((u) => u.role === 'patient').length,
+      doctors: users.filter((u) => u.role === 'doctor').length,
+      admins: users.filter((u) => u.role === 'admin').length,
+      pendingDoctors: users.filter((u) => u.role === 'doctor' && !u.isApproved).length,
+      verifiedUsers: users.filter((u) => u.isVerified).length,
+    };
+
+    res.status(200).json({
+      success: true,
+      data: { users, counts },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * PATCH /api/auth/approve-doctor/:userId
+ * Admin only — approve or revoke a doctor's access.
+ */
+const approveDoctor = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    if (user.role !== 'doctor') {
+      return res.status(400).json({ success: false, message: 'User is not a doctor.' });
+    }
+
+    user.isApproved = !user.isApproved;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Doctor ${user.isApproved ? 'approved' : 'approval revoked'}.`,
+      data: user.toSafeObject(),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * GET /api/auth/doctors
+ * Authenticated — list doctors. If patient, lists approved doctors.
+ */
+const getDoctors = async (req, res, next) => {
+  try {
+    const filter = { role: 'doctor' };
+    if (req.user?.role === 'patient') {
+      filter.isApproved = true;
+    }
+    const doctors = await User.find(filter)
+      .select('-passwordHash')
+      .sort({ name: 1 });
+
+    res.status(200).json({
+      success: true,
+      data: doctors.map((d) => d.toSafeObject()),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   verifyEmail,
@@ -374,4 +460,7 @@ module.exports = {
   forgotPassword,
   resetPassword,
   getMe,
+  getAllUsers,
+  approveDoctor,
+  getDoctors,
 };

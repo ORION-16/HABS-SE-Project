@@ -6,6 +6,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 
 const authRoutes = require('./routes/auth.routes');
 const availabilityRoutes = require('./routes/availability.routes');
+const appointmentRoutes = require('./routes/appointment.routes');
 
 /**
  * Creates and configures the Express app.
@@ -54,8 +55,16 @@ const createApp = (io) => {
   app.use('/api/auth', authLimiter);
 
   // ─── Routes ──────────────────────────────────────────────────────
+  app.get('/api', (req, res) => {
+    res.status(200).json({
+      success: true,
+      message: 'HABS API is running.',
+      health: '/api/health',
+    });
+  });
   app.use('/api/auth', authRoutes);
   app.use('/api/availability', availabilityRoutes);
+  app.use('/api/appointments', appointmentRoutes);
 
   // ─── Health Check ────────────────────────────────────────────────
   app.get('/api/health', (req, res) => {

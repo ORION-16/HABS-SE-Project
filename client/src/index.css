@@ -1,32 +1,22 @@
 @import "tailwindcss";
 
-/* ─── HABS Custom Design Tokens (Light Executive Dashboard) ──────── */
+/* ─── HABS Design System (Spacious Modern Healthcare UI) ──────── */
 :root {
-  --habs-canvas-bg: #eceef7;
-  --habs-shell-bg: #f8f9fe;
+  --habs-canvas-bg: #f8fafc;
   --habs-card-bg: #ffffff;
-  --habs-dock-bg: #14151b;
-  --habs-dock-hover: #22232e;
+  --habs-dock-bg: #0f172a;
   
-  --habs-brand-purple: #6956e5;
   --habs-brand-indigo: #4f46e5;
-  --habs-brand-cyan: #06b6d4;
-  --habs-brand-pink: #ec4899;
-  --habs-brand-amber: #f59e0b;
-  --habs-brand-emerald: #10b981;
+  --habs-brand-indigo-hover: #4338ca;
+  --habs-brand-purple: #6366f1;
 
-  --habs-text-primary: #171825;
-  --habs-text-secondary: #585d6e;
-  --habs-text-muted: #8e94a5;
-  --habs-text-light: #b2b8c8;
+  --habs-text-primary: #0f172a;
+  --habs-text-secondary: #475569;
+  --habs-text-muted: #64748b;
+  --habs-text-light: #94a3b8;
 
-  --habs-border-subtle: #f0f2f9;
-  --habs-border-card: rgba(230, 234, 246, 0.9);
-  --habs-pill-bg: #f0edfe;
-  --habs-pill-text: #6956e5;
-
-  --habs-shadow-card: 0 10px 30px -4px rgba(20, 24, 44, 0.04), 0 4px 12px -2px rgba(20, 24, 44, 0.02);
-  --habs-shadow-float: 0 20px 45px -10px rgba(18, 22, 40, 0.07), 0 8px 18px -4px rgba(18, 22, 40, 0.03);
+  --habs-border-subtle: #f1f5f9;
+  --habs-border-card: #e2e8f0;
 }
 
 /* ─── Global Reset & Typography ─────────────────────────────────── */
@@ -45,111 +35,58 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Modern Card Styles Matching Reference Image ───────────────── */
+/* ─── Card Utilities ─────────────────────────────────────────────── */
 .habs-card {
-  background: var(--habs-card-bg);
-  border-radius: 1.5rem; /* 24px */
-  border: 1px solid var(--habs-border-card);
-  box-shadow: var(--habs-shadow-card);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.habs-card:hover {
-  box-shadow: var(--habs-shadow-float);
+  background: #ffffff;
+  border-radius: 1rem; /* 16px */
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
 }
 
 .habs-stat-card {
-  background: var(--habs-card-bg);
-  border-radius: 1.5rem;
-  border: 1px solid var(--habs-border-card);
-  box-shadow: var(--habs-shadow-card);
-  padding: 1.25rem 1.35rem;
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.habs-stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--habs-shadow-float);
-}
-
-/* ─── Dock Sidebar Pill (Exact Screenshot Look) ─────────────────── */
-.habs-dock {
-  background: var(--habs-dock-bg);
-  border-radius: 2rem; /* 32px */
-  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.25);
-}
-
-.habs-dock-btn {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 0.875rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #7b8194;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-}
-
-.habs-dock-btn:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
-  transform: scale(1.05);
-}
-
-.habs-dock-btn.active {
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--habs-brand-purple), var(--habs-brand-indigo));
-  box-shadow: 0 6px 18px rgba(105, 86, 229, 0.45);
-}
-
-/* ─── Pill Badges & Buttons ─────────────────────────────────────── */
-.habs-pill-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.4rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: var(--habs-pill-bg);
-  color: var(--habs-pill-text);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
 }
 
-.habs-pill-btn:hover {
-  background: var(--habs-brand-purple);
-  color: #ffffff;
-  transform: translateY(-1px);
+.habs-stat-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
 }
 
+/* ─── Buttons ───────────────────────────────────────────────────── */
 .habs-btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 1rem;
+  height: 2.75rem; /* 44px */
+  padding: 0 1.5rem;
+  border-radius: 0.75rem; /* 12px */
   font-size: 0.875rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #6956e5 0%, #4f46e5 100%);
+  font-weight: 600;
+  background-color: var(--habs-brand-indigo);
   color: #ffffff;
-  box-shadow: 0 8px 20px -3px rgba(105, 86, 229, 0.35);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
   border: none;
   cursor: pointer;
 }
 
 .habs-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 25px -4px rgba(105, 86, 229, 0.45);
+  background-color: var(--habs-brand-indigo-hover);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
 }
 
-.habs-btn-primary:active {
-  transform: translateY(0);
+.habs-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .habs-btn-secondary {
@@ -157,91 +94,78 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border-radius: 1rem;
+  height: 2.75rem;
+  padding: 0 1.25rem;
+  border-radius: 0.75rem;
   font-size: 0.875rem;
   font-weight: 600;
-  background: #f4f5fa;
-  color: var(--habs-text-primary);
-  border: 1px solid var(--habs-border-card);
+  background-color: #ffffff;
+  color: #334155;
+  border: 1px solid #e2e8f0;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .habs-btn-secondary:hover {
-  background: #e9ebf5;
-  color: var(--habs-brand-purple);
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
 }
 
 /* ─── Inputs ────────────────────────────────────────────────────── */
 .habs-input {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 0.875rem;
-  border: 1.5px solid #e7ebf4;
-  background: #ffffff;
-  color: var(--habs-text-primary);
+  height: 2.875rem; /* 46px */
+  padding: 0 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #0f172a;
   font-size: 0.875rem;
-  font-weight: 500;
   transition: all 0.2s ease;
   outline: none;
 }
 
 .habs-input:focus {
-  border-color: var(--habs-brand-purple);
-  box-shadow: 0 0 0 4px rgba(105, 86, 229, 0.12);
+  border-color: var(--habs-brand-indigo);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
 }
 
 .habs-input::placeholder {
-  color: var(--habs-text-muted);
+  color: #94a3b8;
 }
 
 /* ─── Slot Chips (Calendar & Booking) ───────────────────────────── */
 .habs-slot-chip {
-  padding: 0.5rem 0.875rem;
-  border-radius: 0.75rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  background: #f4f5fb;
-  color: var(--habs-text-secondary);
-  border: 1px solid #e7eaf4;
-  transition: all 0.2s ease;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  background-color: #ffffff;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  transition: all 0.15s ease;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .habs-slot-chip:hover {
-  background: #eeebfd;
-  color: var(--habs-brand-purple);
-  border-color: #d8d3fa;
+  background-color: #eef2ff;
+  color: #4f46e5;
+  border-color: #c7d2fe;
   transform: translateY(-1px);
 }
 
 .habs-slot-chip.selected {
-  background: var(--habs-brand-purple);
+  background-color: #4f46e5;
   color: #ffffff;
-  border-color: var(--habs-brand-purple);
-  box-shadow: 0 6px 16px rgba(105, 86, 229, 0.35);
+  border-color: #4f46e5;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
 
-/* ─── Micro-animations & React Bits Styling ─────────────────────── */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.animate-shimmer {
-  background: linear-gradient(90deg, #171825 0%, #6956e5 50%, #171825 100%);
-  background-size: 200% auto;
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: shimmer 4s linear infinite;
-}
-
-/* Subtle sleek scrollbar */
+/* Clean Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -252,10 +176,170 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d4d8e6;
+  background: #cbd5e1;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #b6bccf;
+  background: #94a3b8;
 }
+
+/* ─── Layout: Sidebar Content Offset ─────────────────────────────── */
+@media (min-width: 768px) {
+  .habs-layout-shell {
+    padding-left: 72px;
+  }
+}
+
+/* ─── Spacious Dashboard Layout & System Components ───────────────── */
+.habs-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  width: 100%;
+}
+
+.habs-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.75rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .habs-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .habs-kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.75rem;
+  }
+}
+
+.habs-kpi-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.25rem;
+  padding: 2rem 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+  min-height: 136px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.habs-kpi-card:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06);
+}
+
+.habs-table-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+.habs-table-header-box {
+  padding: 1.75rem 2.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.habs-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+}
+
+.habs-table th {
+  padding: 1.25rem 2.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.habs-table td {
+  padding: 1.5rem 2.5rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.habs-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.habs-table tbody tr:hover td {
+  background-color: #fafbfc;
+}
+
+/* ─── Premium UI Utilities ────────────────────────────────────────── */
+.habs-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.habs-tab-btn:hover {
+  color: #0f172a;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.habs-tab-btn.active {
+  color: #4f46e5;
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.habs-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.habs-filter-chip:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.habs-filter-chip.active {
+  background-color: #4f46e5;
+  color: #ffffff;
+  border-color: #4f46e5;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+}
+

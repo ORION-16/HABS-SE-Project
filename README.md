@@ -97,17 +97,7 @@ se-project/
 npm run install:all
 ```
 
-### 2. Seed demo accounts (Pre-configured Doctor, Patient, and Admin)
-```bash
-npm run seed
-```
-
-This creates:
-- **Patient**: `patient@habs.com` / `Password@123`
-- **Doctor**: `doctor@habs.com` / `Password@123` *(Pre-configured Mon–Fri schedule, Dec 25 blocked)*
-- **Admin**: `admin@habs.com` / `Password@123`
-
-### 3. Run Development Servers (Concurrent Backend + Frontend)
+### 2. Run Development Servers (Concurrent Backend + Frontend)
 ```bash
 npm run dev
 ```
@@ -115,7 +105,7 @@ npm run dev
 - **Frontend**: [http://localhost:5173](http://localhost:5173)
 - **Backend API**: [http://localhost:5000/api](http://localhost:5000/api)
 
-### 4. Run Automated Test Suite (28 / 28 Assertions)
+### 3. Run Automated Test Suite (28 / 28 Assertions)
 ```bash
 npm test
 ```

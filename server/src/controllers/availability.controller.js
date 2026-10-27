@@ -1,4 +1,5 @@
 const Availability = require('../models/Availability.model');
+const Appointment = require('../models/Appointment.model');
 const redis = require('../config/redis');
 
 /**
@@ -296,8 +297,14 @@ const getOpenSlots = async (req, res, next) => {
       }
     }
 
-    // Respect dailyCap (for now, just cap the returned slots)
-    const cappedSlots = allSlots.slice(0, availability.dailyCap);
+    const bookedAppointments = await Appointment.find({
+      doctorId,
+      date,
+      status: 'confirmed',
+    }).select('time');
+    const bookedTimes = new Set(bookedAppointments.map((appointment) => appointment.time));
+    const remainingCapacity = Math.max(availability.dailyCap - bookedTimes.size, 0);
+    const cappedSlots = allSlots.filter((time) => !bookedTimes.has(time)).slice(0, remainingCapacity);
 
     res.status(200).json({
       success: true,

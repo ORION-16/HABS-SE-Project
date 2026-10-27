@@ -14,7 +14,6 @@ import {
   Award,
   FileBadge,
   ArrowRight,
-  CheckCircle2,
   MailCheck
 } from 'lucide-react';
 import { registerUser } from '../api/auth.api';
@@ -43,6 +42,7 @@ const Register = () => {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
+  const [requiresEmailVerification, setRequiresEmailVerification] = useState(false);
 
   const {
     register,
@@ -73,8 +73,9 @@ const Register = () => {
       const res = await registerUser(payload);
       if (res.data.success) {
         setRegisteredEmail(data.email);
+        setRequiresEmailVerification(Boolean(res.data.data?.requiresEmailVerification));
         setSuccess(true);
-        toast.success('Registration successful! Check your email.');
+        toast.success(res.data.message || 'Registration successful! You can sign in now.');
       }
     } catch (err) {
       const message = err.response?.data?.message || 'Registration failed';
@@ -86,67 +87,67 @@ const Register = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-[#eceef7] flex items-center justify-center p-4 sm:p-6 antialiased">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 antialiased">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-[460px] bg-white rounded-[32px] sm:rounded-[36px] border border-[#e8ecf4] shadow-[0_20px_50px_-12px_rgba(20,24,45,0.08)] p-8 sm:p-10 text-center"
+          className="w-full max-w-md bg-white rounded-3xl border border-slate-200/80 shadow-md p-8 sm:p-10 text-center space-y-4"
         >
-          <div className="w-16 h-16 mx-auto mb-4 rounded-3xl bg-indigo-50 text-[#6956e5] flex items-center justify-center shadow-inner">
-            <MailCheck className="w-8 h-8" />
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <MailCheck className="w-7 h-7" />
           </div>
-          <h2 className="text-2xl font-extrabold text-[#171825]">Check Your Email</h2>
-          <p className="text-xs font-semibold text-[#8e94a5] mt-2 leading-relaxed">
-            We sent a verification token to <strong className="text-gray-800">{registeredEmail}</strong>.
-            Click the link in the email or proceed to login once confirmed.
+          <h2 className="text-2xl font-bold text-slate-900">
+            {requiresEmailVerification ? 'Check Your Email' : 'Account Created'}
+          </h2>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            {requiresEmailVerification ? (
+              <>We sent a verification link to <strong className="text-slate-800">{registeredEmail}</strong>. Click the link in the message to activate your account.</>
+            ) : (
+              <>Your account for <strong className="text-slate-800">{registeredEmail}</strong> is ready. Sign in to continue.</>
+            )}
           </p>
-
-          {selectedRole === 'doctor' && (
-            <div className="mt-4 p-3 rounded-2xl bg-amber-50 text-amber-800 text-xs font-semibold border border-amber-100">
-              ⚠️ Doctor accounts also require admin approval after email verification.
-            </div>
-          )}
-
-          <Link
-            to="/login"
-            className="habs-btn-primary w-full !py-3 mt-6"
-          >
-            Go to Login Page
-          </Link>
+          <div className="pt-4">
+            <Link
+              to="/login"
+              className="habs-btn-primary w-full inline-flex justify-center"
+            >
+              Back to Login
+            </Link>
+          </div>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#eceef7] flex items-center justify-center p-4 sm:p-6 antialiased selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-6 sm:p-10 antialiased">
       <motion.div
-        initial={{ opacity: 0, y: 15 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="w-full max-w-[500px] bg-white rounded-[32px] sm:rounded-[36px] border border-[#e8ecf4] shadow-[0_20px_50px_-12px_rgba(20,24,45,0.08)] p-6 sm:p-9 relative overflow-hidden"
+        transition={{ duration: 0.35, ease: 'easeOut' }}
+        className="w-full max-w-lg bg-white rounded-3xl border border-slate-200/80 shadow-md p-8 sm:p-10 space-y-6"
       >
-        {/* Brand Header */}
-        <div className="text-center mb-6">
-          <div className="w-14 h-14 mx-auto mb-3.5 rounded-2xl bg-gradient-to-tr from-[#6956e5] via-[#7d67f5] to-[#9a87fc] flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
-            <Stethoscope className="w-7 h-7" />
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <div className="w-12 h-12 mx-auto rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/20">
+            <Stethoscope className="w-6 h-6" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#171825] tracking-tight">
-            Create Account
-          </h2>
-          <p className="text-xs sm:text-sm font-semibold text-[#8e94a5] mt-1">
-            Join HABS Healthcare System
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            Create an Account
+          </h1>
+          <p className="text-sm text-slate-500">
+            Join the HABS Healthcare Platform
           </p>
         </div>
 
         {/* Role Toggle Tabs */}
-        <div className="grid grid-cols-2 p-1.5 rounded-2xl bg-[#f4f5fb] border border-slate-100 mb-5">
+        <div className="grid grid-cols-2 p-1 rounded-xl bg-slate-100 border border-slate-200">
           <button
             type="button"
             onClick={() => setValue('role', 'patient')}
-            className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+            className={`py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
               selectedRole === 'patient'
-                ? 'bg-white text-[#171825] shadow-sm font-extrabold'
+                ? 'bg-white text-slate-900 shadow-xs'
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -155,9 +156,9 @@ const Register = () => {
           <button
             type="button"
             onClick={() => setValue('role', 'doctor')}
-            className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+            className={`py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
               selectedRole === 'doctor'
-                ? 'bg-white text-[#171825] shadow-sm font-extrabold'
+                ? 'bg-white text-slate-900 shadow-xs'
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -166,10 +167,10 @@ const Register = () => {
         </div>
 
         {/* Registration Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Full Name */}
-          <div>
-            <label className="block text-xs font-bold text-[#171825] mb-1">Full Name</label>
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700">Full Name</label>
             <div className="relative">
               <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
@@ -178,12 +179,12 @@ const Register = () => {
                 className="habs-input !pl-10"
               />
             </div>
-            {errors.name && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.name.message}</p>}
+            {errors.name && <p className="text-xs text-rose-500 font-medium">{errors.name.message}</p>}
           </div>
 
           {/* Email */}
-          <div>
-            <label className="block text-xs font-bold text-[#171825] mb-1">Email Address</label>
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700">Email Address</label>
             <div className="relative">
               <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
@@ -193,12 +194,12 @@ const Register = () => {
                 className="habs-input !pl-10"
               />
             </div>
-            {errors.email && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.email.message}</p>}
+            {errors.email && <p className="text-xs text-rose-500 font-medium">{errors.email.message}</p>}
           </div>
 
           {/* Phone */}
-          <div>
-            <label className="block text-xs font-bold text-[#171825] mb-1">Phone Number</label>
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700">Phone Number</label>
             <div className="relative">
               <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
@@ -207,12 +208,12 @@ const Register = () => {
                 className="habs-input !pl-10"
               />
             </div>
-            {errors.phone && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.phone.message}</p>}
+            {errors.phone && <p className="text-xs text-rose-500 font-medium">{errors.phone.message}</p>}
           </div>
 
           {/* Password */}
-          <div>
-            <label className="block text-xs font-bold text-[#171825] mb-1">Password</label>
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700">Password</label>
             <div className="relative">
               <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
@@ -222,13 +223,13 @@ const Register = () => {
                 className="habs-input !pl-10"
               />
             </div>
-            {errors.password && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.password.message}</p>}
+            {errors.password && <p className="text-xs text-rose-500 font-medium">{errors.password.message}</p>}
           </div>
 
           {/* Patient: Date of Birth */}
           {selectedRole === 'patient' && (
-            <div>
-              <label className="block text-xs font-bold text-[#171825] mb-1">Date of Birth</label>
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-slate-700">Date of Birth</label>
               <div className="relative">
                 <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
@@ -242,9 +243,9 @@ const Register = () => {
 
           {/* Doctor: Specialization & License */}
           {selectedRole === 'doctor' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              <div>
-                <label className="block text-xs font-bold text-[#171825] mb-1">Specialization</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-700">Specialization</label>
                 <div className="relative">
                   <Award className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
@@ -253,11 +254,11 @@ const Register = () => {
                     className="habs-input !pl-10"
                   />
                 </div>
-                {errors.specialization && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.specialization.message}</p>}
+                {errors.specialization && <p className="text-xs text-rose-500 font-medium">{errors.specialization.message}</p>}
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-[#171825] mb-1">License No.</label>
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-700">License No.</label>
                 <div className="relative">
                   <FileBadge className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
@@ -266,21 +267,21 @@ const Register = () => {
                     className="habs-input !pl-10"
                   />
                 </div>
-                {errors.licenseNumber && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.licenseNumber.message}</p>}
+                {errors.licenseNumber && <p className="text-xs text-rose-500 font-medium">{errors.licenseNumber.message}</p>}
               </div>
             </div>
           )}
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             type="submit"
             disabled={submitting}
-            className="habs-btn-primary w-full !py-3 mt-4"
+            className="habs-btn-primary w-full !h-12 !text-sm mt-3"
           >
             {submitting ? (
               <span className="flex items-center gap-2">
                 <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                Registering...
+                Creating account...
               </span>
             ) : (
               <span className="flex items-center justify-center gap-2">
@@ -291,10 +292,13 @@ const Register = () => {
         </form>
 
         {/* Footer */}
-        <p className="text-center text-xs font-semibold text-[#8e94a5] mt-5">
+        <p className="text-center text-xs text-slate-500 pt-2">
           Already registered?{' '}
-          <Link to="/login" className="font-bold text-[#6956e5] hover:underline">
-            Login here
+          <Link
+            to="/login"
+            className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+          >
+            Sign in
           </Link>
         </p>
       </motion.div>

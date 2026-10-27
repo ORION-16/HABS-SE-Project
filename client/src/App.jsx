@@ -22,21 +22,14 @@ const HomeRedirect = () => {
     return <Navigate to="/login" replace />;
   }
 
-  switch (role) {
-    case 'doctor':
-      return <Navigate to="/doctor/availability" replace />;
-    case 'admin':
-      return <Navigate to="/dashboard" replace />;
-    default:
-      return <Navigate to="/dashboard" replace />;
-  }
+  return <Navigate to="/dashboard" replace />;
 };
 
 const App = () => {
   return (
     <Router>
       <AuthProvider>
-        <div className="min-h-screen bg-[#eceef7]">
+        <div className="min-h-screen bg-slate-50">
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<HomeRedirect />} />

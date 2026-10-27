@@ -1,5 +1,6 @@
 const { verifyToken } = require('../utils/jwt');
 const redis = require('../config/redis');
+const User = require('../models/User.model');
 
 /**
  * JWT authentication middleware.
@@ -40,6 +41,16 @@ const authenticateToken = async (req, res, next) => {
 
     // Verify token
     const decoded = verifyToken(token);
+
+    // A deleted account must not retain access merely because its JWT has not
+    // expired yet (for example after demo accounts are cleared in development).
+    const user = await User.findById(decoded.userId).select('_id role').lean();
+    if (!user || user.role !== decoded.role) {
+      return res.status(401).json({
+        success: false,
+        message: 'Account no longer exists. Please sign in again.',
+      });
+    }
 
     // Attach to request
     req.user = {

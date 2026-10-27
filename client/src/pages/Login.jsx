@@ -4,20 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import {
-  Stethoscope,
-  Mail,
-  Lock,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  AlertCircle,
-  Sparkles,
-  UserCheck
-} from 'lucide-react';
+import { Stethoscope, Mail, Lock, ArrowRight } from 'lucide-react';
 import { loginUser } from '../api/auth.api';
 import { useAuth } from '../context/AuthContext';
-import ShinyText from '../components/react-bits/ShinyText';
 import toast from 'react-hot-toast';
 
 const loginSchema = z.object({
@@ -33,7 +22,6 @@ const Login = () => {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(loginSchema),
@@ -48,12 +36,7 @@ const Login = () => {
         const { token, user } = res.data.data;
         login(token, user);
         toast.success(`Welcome back, ${user.name}!`);
-
-        if (user.role === 'doctor') {
-          navigate('/doctor/availability');
-        } else {
-          navigate('/dashboard');
-        }
+        navigate('/dashboard');
       }
     } catch (err) {
       const message = err.response?.data?.message || 'Login failed';
@@ -63,65 +46,34 @@ const Login = () => {
     }
   };
 
-  const fillDemoAccount = (role) => {
-    if (role === 'doctor') {
-      setValue('email', 'doctor@habs.com');
-      setValue('password', 'Password@123');
-      toast.success('Filled Demo Doctor credentials');
-    } else {
-      setValue('email', 'patient@habs.com');
-      setValue('password', 'Password@123');
-      toast.success('Filled Demo Patient credentials');
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-[#eceef7] flex items-center justify-center p-4 sm:p-6 antialiased selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-6 sm:p-10 antialiased">
       <motion.div
-        initial={{ opacity: 0, y: 15 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="w-full max-w-[460px] bg-white rounded-[32px] sm:rounded-[36px] border border-[#e8ecf4] shadow-[0_20px_50px_-12px_rgba(20,24,45,0.08)] p-6 sm:p-9 relative overflow-hidden"
+        transition={{ duration: 0.35, ease: 'easeOut' }}
+        className="w-full max-w-md bg-white rounded-3xl border border-slate-200/80 shadow-md p-8 sm:p-10 space-y-7"
       >
-        {/* Brand Header */}
-        <div className="text-center mb-7">
-          <div className="w-14 h-14 mx-auto mb-3.5 rounded-2xl bg-gradient-to-tr from-[#6956e5] via-[#7d67f5] to-[#9a87fc] flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
-            <Stethoscope className="w-7 h-7" />
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <div className="w-12 h-12 mx-auto rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/20">
+            <Stethoscope className="w-6 h-6" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#171825] tracking-tight">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             Welcome Back
-          </h2>
-          <p className="text-xs sm:text-sm font-semibold text-[#8e94a5] mt-1">
-            Access your HABS Healthcare Portal
+          </h1>
+          <p className="text-sm text-slate-500">
+            Sign in to access your healthcare portal
           </p>
         </div>
 
-        {/* Demo Account Fill Shortcuts */}
-        <div className="mb-6 p-3 rounded-2xl bg-[#f8f9fd] border border-slate-100 flex items-center justify-between gap-2">
-          <span className="text-[11px] font-bold text-slate-500">Quick Test:</span>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => fillDemoAccount('doctor')}
-              className="text-xs font-bold px-2.5 py-1 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors"
-            >
-              🩺 Doctor
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemoAccount('patient')}
-              className="text-xs font-bold px-2.5 py-1 rounded-xl bg-cyan-50 text-cyan-700 hover:bg-cyan-100 transition-colors"
-            >
-              🧑‍💼 Patient
-            </button>
-          </div>
-        </div>
-
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Email */}
-          <div>
-            <label className="block text-xs font-bold text-[#171825] mb-1.5">Email Address</label>
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700">
+              Email Address
+            </label>
             <div className="relative">
               <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
@@ -132,15 +84,24 @@ const Login = () => {
                 autoComplete="email"
               />
             </div>
-            {errors.email && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.email.message}</p>}
+            {errors.email && (
+              <p className="text-xs text-rose-500 font-medium mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           {/* Password */}
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-bold text-[#171825]">Password</label>
-              <Link to="/forgot-password" className="text-[11px] font-bold text-indigo-600 hover:underline">
-                Forgot?
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-semibold text-slate-700">
+                Password
+              </label>
+              <Link
+                to="/forgot-password"
+                className="text-xs font-medium text-indigo-600 hover:text-indigo-700 hover:underline"
+              >
+                Forgot password?
               </Link>
             </div>
             <div className="relative">
@@ -153,14 +114,18 @@ const Login = () => {
                 autoComplete="current-password"
               />
             </div>
-            {errors.password && <p className="text-[11px] font-bold text-rose-500 mt-1">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="text-xs text-rose-500 font-medium mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             type="submit"
             disabled={submitting}
-            className="habs-btn-primary w-full !py-3 mt-2"
+            className="habs-btn-primary w-full !h-12 !text-sm mt-3"
           >
             {submitting ? (
               <span className="flex items-center gap-2">
@@ -169,25 +134,20 @@ const Login = () => {
               </span>
             ) : (
               <span className="flex items-center justify-center gap-2">
-                Sign In to Account <ArrowRight className="w-4 h-4" />
+                Sign In <ArrowRight className="w-4 h-4" />
               </span>
             )}
           </button>
         </form>
 
-        {/* Security Lockout Banner */}
-        <div className="mt-6 p-3 rounded-2xl bg-amber-50/70 border border-amber-100 flex items-center gap-2.5">
-          <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
-          <p className="text-[11px] font-medium text-amber-800">
-            5 failed login attempts triggers automatic 15-min lockout.
-          </p>
-        </div>
-
         {/* Switch to Register */}
-        <p className="text-center text-xs font-semibold text-[#8e94a5] mt-6">
+        <p className="text-center text-xs text-slate-500 pt-2">
           Don't have an account?{' '}
-          <Link to="/register" className="font-bold text-[#6956e5] hover:underline">
-            Register here
+          <Link
+            to="/register"
+            className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+          >
+            Create an account
           </Link>
         </p>
       </motion.div>
