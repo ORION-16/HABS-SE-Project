@@ -32,15 +32,15 @@ const VerifyEmail = () => {
   }, [token]);
 
   return (
-    <div className="min-h-screen bg-[#eceef7] flex items-center justify-center p-4 sm:p-6 antialiased">
+    <div className="min-h-screen habs-state-shell flex items-center justify-center p-4 sm:p-6 antialiased">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-[460px] bg-white rounded-[32px] sm:rounded-[36px] border border-[#e8ecf4] shadow-[0_20px_50px_-12px_rgba(20,24,45,0.08)] p-8 sm:p-10 text-center"
+        className="w-full max-w-[460px] habs-state-card p-8 sm:p-10 text-center"
       >
         {status === 'verifying' && (
           <>
-            <div className="w-16 h-16 mx-auto mb-4 rounded-3xl bg-indigo-50 text-[#6956e5] flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-3xl bg-indigo-50 text-[#2f6fed] flex items-center justify-center">
               <Loader2 className="w-8 h-8 animate-spin" />
             </div>
             <h2 className="text-2xl font-extrabold text-[#171825]">Verifying Email</h2>

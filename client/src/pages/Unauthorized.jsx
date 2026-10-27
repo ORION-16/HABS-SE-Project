@@ -7,11 +7,11 @@ const Unauthorized = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen bg-[#eceef7] flex items-center justify-center p-4 sm:p-6 antialiased">
+    <div className="min-h-screen habs-state-shell flex items-center justify-center p-4 sm:p-6 antialiased">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-[440px] bg-white rounded-[32px] sm:rounded-[36px] border border-[#e8ecf4] shadow-[0_20px_50px_-12px_rgba(20,24,45,0.08)] p-8 sm:p-10 text-center"
+        className="w-full max-w-[440px] habs-state-card p-8 sm:p-10 text-center"
       >
         <div className="w-16 h-16 mx-auto mb-4 rounded-3xl bg-rose-50 text-rose-600 flex items-center justify-center">
           <ShieldAlert className="w-8 h-8" />

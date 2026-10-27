@@ -202,7 +202,7 @@ const DoctorAvailability = () => {
         </div>
 
         {/* ─── 2. Real-Time Sync Indicator ──────────────────────────── */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs flex items-center justify-between">
+        <div className="habs-panel p-5 flex items-center justify-between">
           <div className="flex items-center gap-3.5">
             <span className="relative flex h-3.5 w-3.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -220,7 +220,7 @@ const DoctorAvailability = () => {
         </div>
 
         {/* ─── 3. Weekly Schedule Configuration Grid ────────────────── */}
-        <div className="bg-white rounded-2xl p-7 sm:p-8 border border-slate-200/90 shadow-xs space-y-7">
+        <div className="habs-panel p-7 sm:p-8 space-y-7">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 pb-5 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold text-slate-900">Weekly Practice Schedule</h2>
@@ -329,7 +329,7 @@ const DoctorAvailability = () => {
         </div>
 
         {/* ─── 4. Block Specific Dates ───────────────────────────────── */}
-        <div className="bg-white rounded-2xl p-7 border border-slate-200/90 shadow-xs space-y-5">
+        <div className="habs-panel p-7 space-y-5">
           <div>
             <h2 className="text-base font-bold text-slate-900">Block Specific Dates</h2>
             <p className="text-xs text-slate-500 mt-0.5">Dates added here will immediately hide all open slots from patient calendars</p>

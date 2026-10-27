@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { getOpenSlots } from '../api/availability.api';
 import { bookAppointment } from '../api/appointments.api';
+import MagneticButton from './react-bits/MagneticButton';
 import toast from 'react-hot-toast';
 
 /**
@@ -101,9 +102,9 @@ const SlotCalendar = ({ doctorId, preselectedDate = '', onAppointmentBooked }) =
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       {/* Date Search Controls */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-5">
         <div className="relative flex-1">
           <CalendarIcon className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
           <input
@@ -115,10 +116,11 @@ const SlotCalendar = ({ doctorId, preselectedDate = '', onAppointmentBooked }) =
           />
         </div>
 
-        <button
+        <MagneticButton
           onClick={() => fetchSlots(date)}
           disabled={loading || !date}
           className="habs-btn-primary shrink-0 !h-12 !px-6 !text-sm"
+          strength={0.12}
         >
           {loading ? (
             <span className="flex items-center gap-2">
@@ -130,7 +132,7 @@ const SlotCalendar = ({ doctorId, preselectedDate = '', onAppointmentBooked }) =
               <Search className="w-4 h-4" /> Find Open Slots
             </span>
           )}
-        </button>
+        </MagneticButton>
       </div>
 
       {hasSearched && (
@@ -178,7 +180,7 @@ const SlotCalendar = ({ doctorId, preselectedDate = '', onAppointmentBooked }) =
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="space-y-5"
+              className="space-y-6"
             >
               <div className="flex items-center justify-between text-xs sm:text-sm">
                 <span className="font-bold text-slate-900">
@@ -190,7 +192,7 @@ const SlotCalendar = ({ doctorId, preselectedDate = '', onAppointmentBooked }) =
               </div>
 
               {/* Slot chips grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {slots.map((slot) => {
                   const isSelected = selectedSlot === slot;
                   return (
@@ -225,13 +227,14 @@ const SlotCalendar = ({ doctorId, preselectedDate = '', onAppointmentBooked }) =
                       </p>
                     </div>
                   </div>
-                  <button
+                  <MagneticButton
                     onClick={handleBooking}
                     disabled={booking}
                     className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-indigo-600/20 transition-all"
+                    strength={0.1}
                   >
                     {booking ? 'Confirming…' : 'Confirm Appointment'}
-                  </button>
+                  </MagneticButton>
                 </motion.div>
               )}
             </motion.div>

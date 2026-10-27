@@ -47,12 +47,12 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-6 sm:p-10 antialiased">
+    <div className="min-h-screen habs-auth-shell flex flex-col justify-center items-center p-6 sm:p-10 antialiased">
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
-        className="w-full max-w-md bg-white rounded-3xl border border-slate-200/80 shadow-md p-8 sm:p-10 space-y-7"
+        className="w-full max-w-md habs-auth-card p-8 sm:p-10 space-y-7"
       >
         {/* Header */}
         <div className="text-center space-y-2">

@@ -87,11 +87,11 @@ const Register = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 antialiased">
+      <div className="min-h-screen habs-auth-shell flex items-center justify-center p-6 antialiased">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md bg-white rounded-3xl border border-slate-200/80 shadow-md p-8 sm:p-10 text-center space-y-4"
+          className="w-full max-w-md habs-auth-card p-8 sm:p-10 text-center space-y-4"
         >
           <div className="w-14 h-14 mx-auto rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
             <MailCheck className="w-7 h-7" />
@@ -120,12 +120,12 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-6 sm:p-10 antialiased">
+    <div className="min-h-screen habs-auth-shell flex flex-col justify-center items-center p-6 sm:p-10 antialiased">
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
-        className="w-full max-w-lg bg-white rounded-3xl border border-slate-200/80 shadow-md p-8 sm:p-10 space-y-6"
+        className="w-full max-w-lg habs-auth-card p-8 sm:p-10 space-y-6"
       >
         {/* Header */}
         <div className="text-center space-y-2">

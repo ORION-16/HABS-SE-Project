@@ -66,7 +66,7 @@ const AppointmentChart = () => {
             ref={pathRef}
             d={pathD}
             fill="none"
-            stroke="#6956e5"
+            stroke="#2f6fed"
             strokeWidth="3"
             strokeLinecap="round"
           />

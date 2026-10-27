@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useLayoutEffect, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import gsap from 'gsap';
 import {
   LayoutGrid,
   Calendar,
@@ -22,6 +23,19 @@ const DashboardLayout = ({ children, title = null, subtitle = null }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
+  const contentRef = useRef(null);
+
+  useLayoutEffect(() => {
+    if (!contentRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const ctx = gsap.context(() => {
+      const items = gsap.utils.toArray('.habs-reveal');
+      gsap.fromTo(items,
+        { autoAlpha: 0, y: 18 },
+        { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out', stagger: 0.07, clearProps: 'transform' }
+      );
+    }, contentRef);
+    return () => ctx.revert();
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     try {
@@ -50,11 +64,11 @@ const DashboardLayout = ({ children, title = null, subtitle = null }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 antialiased text-slate-900">
+    <div className="min-h-screen habs-app-shell antialiased text-slate-900">
       {/* ─── Fixed Left Sidebar Dock ────────────────────────── */}
       <aside
         style={{ width: SIDEBAR_W }}
-        className="hidden md:flex fixed inset-y-0 left-0 z-30 flex-col items-center justify-between bg-slate-900 border-r border-slate-800 py-6 shadow-lg"
+        className="hidden md:flex fixed inset-y-0 left-0 z-30 flex-col items-center justify-between habs-sidebar py-6"
       >
         {/* Brand Logo */}
         <NavLink
@@ -166,9 +180,10 @@ const DashboardLayout = ({ children, title = null, subtitle = null }) => {
 
       {/* ─── Main Content Shell (guaranteed 72px sidebar clearance on desktop) ─── */}
       <div className="flex flex-col min-h-screen habs-layout-shell">
-        {/* Sticky Clean Header */}
-        <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-8 lg:px-14 py-6 flex items-center justify-between">
-          <div>
+        <div className="habs-workspace-frame">
+          {/* Sticky Clean Header */}
+          <header className="sticky top-0 z-20 habs-topbar px-8 lg:px-14 py-5 flex items-center justify-between">
+          <div className="habs-reveal">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               {title || `Welcome, ${user?.name ? user.name.split(' ')[0] : 'User'}`}
             </h1>
@@ -180,8 +195,8 @@ const DashboardLayout = ({ children, title = null, subtitle = null }) => {
           </div>
 
           {/* User Badge */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="flex items-center gap-3.5 px-5 py-2.5 rounded-full bg-slate-50 border border-slate-200/90 shadow-2xs">
+          <div className="habs-reveal flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-3.5 px-4 py-2 rounded-2xl bg-white/70 border border-slate-200/80 shadow-sm">
               <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white font-bold text-sm flex items-center justify-center shadow-xs">
                 {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
               </div>
@@ -203,12 +218,13 @@ const DashboardLayout = ({ children, title = null, subtitle = null }) => {
               </span>
             </div>
           </div>
-        </header>
+          </header>
 
-        {/* Page Content Body */}
-        <main className="flex-1 px-8 lg:px-14 py-10 lg:py-12 max-w-7xl w-full mx-auto">
-          {children}
-        </main>
+          {/* Page Content Body */}
+          <main ref={contentRef} className="habs-workspace-main flex-1 px-6 sm:px-8 lg:px-12 py-8 lg:py-10 max-w-[1440px] w-full mx-auto">
+            {children}
+          </main>
+        </div>
       </div>
 
       {/* Notifications Drawer Modal */}

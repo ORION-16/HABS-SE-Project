@@ -12,6 +12,8 @@ import { useAuth } from '../../context/AuthContext';
 import { getDoctors } from '../../api/auth.api';
 import { getMyAppointments } from '../../api/appointments.api';
 import SlotCalendar from '../SlotCalendar';
+import SpotlightCard from '../react-bits/SpotlightCard';
+import CountUp from '../react-bits/CountUp';
 
 const PatientDashboard = () => {
   const { user } = useAuth();
@@ -72,7 +74,7 @@ const PatientDashboard = () => {
     <div className="habs-dashboard-container">
       {/* ─── 1. Patient Quick Profile Summary Bar ─────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="min-w-0 bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs flex items-center gap-4">
+        <SpotlightCard className="habs-summary-card habs-reveal" spotlightColor="rgba(79, 70, 229, 0.10)">
           <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
             <User className="w-6 h-6" />
           </div>
@@ -80,9 +82,9 @@ const PatientDashboard = () => {
             <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Patient</p>
             <p className="text-lg font-bold text-slate-900 truncate mt-0.5">{user?.name || 'Patient'}</p>
           </div>
-        </div>
+        </SpotlightCard>
 
-        <div className="min-w-0 bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs flex items-center gap-4">
+        <SpotlightCard className="habs-summary-card habs-reveal" spotlightColor="rgba(37, 99, 235, 0.10)">
           <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
             <Mail className="w-6 h-6" />
           </div>
@@ -90,9 +92,9 @@ const PatientDashboard = () => {
             <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Email</p>
             <p className="text-lg font-bold text-slate-900 truncate mt-0.5">{user?.email || 'N/A'}</p>
           </div>
-        </div>
+        </SpotlightCard>
 
-        <div className="min-w-0 bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs flex items-center gap-4">
+        <SpotlightCard className="habs-summary-card habs-reveal" spotlightColor="rgba(5, 150, 105, 0.10)">
           <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
             <CheckCircle2 className="w-6 h-6" />
           </div>
@@ -100,20 +102,20 @@ const PatientDashboard = () => {
             <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Status</p>
             <p className="text-lg font-bold text-emerald-600 mt-0.5">Active Account</p>
           </div>
-        </div>
+        </SpotlightCard>
       </div>
 
       {/* ─── 2. Specialist Selection & Slot Booking Grid ─────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-10 items-start">
         
         {/* Left Column: Doctor Selection (5 cols) */}
-        <div className="min-w-0 lg:col-span-4 bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs space-y-5">
-          <div className="flex items-center justify-between pb-1">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900">Select a Doctor</h2>
-              <p className="text-xs text-slate-500 mt-1">Choose a physician to view their live schedule</p>
+        <div className="min-w-0 lg:col-span-4 habs-panel habs-reveal p-5 sm:p-6 xl:p-7 space-y-5 sm:space-y-6">
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <h2 className="text-xl sm:text-2xl font-bold leading-tight text-slate-900">Select a Doctor</h2>
+              <p className="text-sm text-slate-500 mt-1">Choose a physician to view their live schedule</p>
             </div>
-            <span className="px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
+            <span className="shrink-0 whitespace-nowrap px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
               {filteredDoctors.length} available
             </span>
           </div>
@@ -131,7 +133,7 @@ const PatientDashboard = () => {
           </div>
 
           {/* Specialty Filters */}
-          <div className="flex items-center gap-2.5 overflow-x-auto pb-1 scrollbar-none">
+          <div className="flex flex-wrap items-center gap-2.5">
             {specialties.map((spec) => (
               <button
                 key={spec}
@@ -144,7 +146,7 @@ const PatientDashboard = () => {
           </div>
 
           {/* Doctors List */}
-          <div className="space-y-3 max-h-[520px] overflow-y-auto pr-1">
+          <div className="space-y-4 max-h-[520px] overflow-y-auto pr-1">
             {loadingDoctors ? (
               <div className="py-14 text-center text-slate-400 text-sm">
                 Loading doctors...
@@ -163,7 +165,7 @@ const PatientDashboard = () => {
                   <div
                     key={docId}
                     onClick={() => setSelectedDoctor(doc)}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                    className={`habs-doctor-row grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl border transition-all cursor-pointer ${
                       isSelected
                         ? 'border-indigo-600 bg-indigo-50/60 shadow-xs ring-1 ring-indigo-600/30'
                         : 'border-slate-200/90 hover:border-slate-300 hover:bg-slate-50/70 bg-white'
@@ -186,7 +188,7 @@ const PatientDashboard = () => {
                       </div>
                     </div>
 
-                    <span className={`text-[11px] font-bold px-3 py-2 rounded-lg shrink-0 transition-colors ${
+                    <span className={`whitespace-nowrap text-[11px] font-bold px-3 py-2 rounded-lg shrink-0 transition-colors ${
                       isSelected ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}>
                       {isSelected ? 'Selected' : 'View Slots'}
@@ -199,7 +201,7 @@ const PatientDashboard = () => {
         </div>
 
         {/* Right Column: Slot Calendar (7 cols) */}
-        <div className="min-w-0 lg:col-span-8 bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs">
+        <div className="min-w-0 lg:col-span-8 habs-panel habs-reveal p-7 sm:p-8">
           {selectedDoctor ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between pb-4 border-b border-slate-100">
@@ -230,14 +232,14 @@ const PatientDashboard = () => {
         </div>
       </div>
 
-      <section className="w-full bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs">
+      <section className="w-full habs-panel habs-reveal p-7 sm:p-8">
         <div className="flex items-center justify-between gap-4 pb-5 border-b border-slate-100">
           <div>
             <h2 className="text-lg font-bold text-slate-900">Your Confirmed Appointments</h2>
             <p className="text-xs text-slate-500 mt-1">Every appointment you reserve is listed here.</p>
           </div>
           <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full">
-            <CalendarCheck2 className="w-4 h-4" /> {appointments.length} confirmed
+            <CalendarCheck2 className="w-4 h-4" /> <CountUp to={appointments.length} duration={0.65} /> confirmed
           </span>
         </div>
 
@@ -250,9 +252,9 @@ const PatientDashboard = () => {
             <p className="text-xs mt-1">Choose a doctor and reserve one of their open times above.</p>
           </div>
         ) : (
-          <div className="mt-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {appointments.map((appointment) => (
-              <article key={appointment.id} className="rounded-xl border border-slate-200 bg-slate-50/70 p-5">
+              <article key={appointment.id} className="habs-appointment-card rounded-xl border border-slate-200 bg-slate-50/70 p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-bold text-slate-900">{appointment.doctor?.name || 'Doctor'}</p>

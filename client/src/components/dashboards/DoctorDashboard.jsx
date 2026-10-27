@@ -15,6 +15,9 @@ import { useAuth } from '../../context/AuthContext';
 import { getAvailability } from '../../api/availability.api';
 import { getMyAppointments } from '../../api/appointments.api';
 import useSocket from '../../hooks/useSocket';
+import CountUp from '../react-bits/CountUp';
+import SpotlightCard from '../react-bits/SpotlightCard';
+import ShinyText from '../react-bits/ShinyText';
 
 const DAYS_MAP = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -76,56 +79,56 @@ const DoctorDashboard = () => {
     <div className="habs-dashboard-container">
       {/* ─── 1. Top KPI Summary Cards ──────────────────────────────── */}
       <div className="habs-kpi-grid">
-        <div className="habs-kpi-card">
+        <SpotlightCard className="habs-kpi-card habs-reveal" spotlightColor="rgba(5, 150, 105, 0.10)">
           <div className="space-y-1">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Working Days</p>
-            <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{activeDaysCount} Days / wk</p>
+            <p className="text-3xl font-extrabold text-slate-900 tracking-tight"><CountUp to={activeDaysCount} duration={0.7} /> Days / wk</p>
             <p className="text-xs text-emerald-600 font-semibold">Recurring schedule</p>
           </div>
           <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
             <CalendarCheck className="w-6 h-6" />
           </div>
-        </div>
+        </SpotlightCard>
 
-        <div className="habs-kpi-card">
+        <SpotlightCard className="habs-kpi-card habs-reveal" spotlightColor="rgba(37, 99, 235, 0.10)">
           <div className="space-y-1">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Daily Patient Limit</p>
-            <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{availability?.dailyCap || 20} max</p>
+            <p className="text-3xl font-extrabold text-slate-900 tracking-tight"><CountUp to={availability?.dailyCap || 20} duration={0.8} /> max</p>
             <p className="text-xs text-slate-500 font-medium">Consultations cap</p>
           </div>
           <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
             <Users className="w-6 h-6" />
           </div>
-        </div>
+        </SpotlightCard>
 
-        <div className="habs-kpi-card">
+        <SpotlightCard className="habs-kpi-card habs-reveal" spotlightColor="rgba(217, 119, 6, 0.10)">
           <div className="space-y-1">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Blocked Dates</p>
-            <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{blockedDatesCount} Dates</p>
+            <p className="text-3xl font-extrabold text-slate-900 tracking-tight"><CountUp to={blockedDatesCount} duration={0.7} /> Dates</p>
             <p className="text-xs text-amber-600 font-semibold">Holidays & leave</p>
           </div>
           <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
             <Ban className="w-6 h-6" />
           </div>
-        </div>
+        </SpotlightCard>
 
-        <div className="habs-kpi-card">
+        <SpotlightCard className="habs-kpi-card habs-reveal" spotlightColor="rgba(16, 185, 129, 0.12)">
           <div className="space-y-1">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Live Sync</p>
-            <p className="text-3xl font-extrabold text-emerald-600 tracking-tight">{appointments.length}</p>
-            <p className="text-xs text-slate-500 font-medium">Total confirmed bookings</p>
+            <p className="text-3xl font-extrabold text-emerald-600 tracking-tight"><CountUp to={appointments.length} duration={0.7} /></p>
+            <p className="text-xs font-medium"><ShinyText text="Total confirmed bookings" speed={4} /></p>
           </div>
           <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
             <Clock3 className="w-6 h-6" />
           </div>
-        </div>
+        </SpotlightCard>
       </div>
 
       {/* ─── 2. Schedule Overview & Booked Patients ─────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         
         {/* Left Column: Weekly Schedule (5 cols) */}
-        <div className="lg:col-span-5 bg-white rounded-2xl p-7 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
+        <div className="lg:col-span-5 habs-panel habs-reveal p-7 sm:p-8 space-y-6">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold text-slate-900">Weekly Schedule</h2>
@@ -198,7 +201,7 @@ const DoctorDashboard = () => {
         </div>
 
         {/* Right Column: Doctor-only booking schedule (7 cols) */}
-        <div className="lg:col-span-7 bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs space-y-5">
+        <div className="lg:col-span-7 habs-panel habs-reveal p-6 sm:p-7 space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
               <h2 className="text-base font-bold text-slate-900">
@@ -228,7 +231,7 @@ const DoctorDashboard = () => {
           ) : (
             <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
               {appointments.map((appointment) => (
-                <article key={appointment.id} className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+                <article key={appointment.id} className="habs-appointment-card rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
                   <div className="w-15 h-15 rounded-xl bg-indigo-600 text-white shrink-0 flex flex-col items-center justify-center">
                     <span className="text-sm font-extrabold">{appointment.time}</span>
                     <span className="text-[10px] opacity-80">30 min</span>
